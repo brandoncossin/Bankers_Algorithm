@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 
-int main(){
+int main(int argc, char *argv[]){
   //5 processes, 3 columns, 3 values in each column
   int processes[5][3][3];
   //array of the available
@@ -23,7 +23,12 @@ int main(){
   int flag[5] = {0, 0, 0, 0, 0};
   //Initial setup, reading from the input
   std::ifstream file;
-  file.open("process_list.txt");
+  if(argc == 1){
+    std::cout << "File Needs a txt file to read from." << std::endl;
+    return 0;
+  }
+  //opens file
+  file.open(argv[1]);
   if(file.is_open()){
     std::string line;
     int process_tracker = 0;
@@ -47,7 +52,6 @@ int main(){
             //Only present on first string/first process
             // Adds to unique array which is used to keep track of the values
             available[tracker-7] = num;
-            //processes[process_tracker][2][tracker-7] = num;
           }
         }
         ++tracker;
@@ -66,14 +70,12 @@ int main(){
   std::cout << "Process \t Allocation \t Max \t Need"<< std::endl;
   for(int i = 0; i < 5; ++i){
     std::cout << "P" << i << "\t " << processes[i][0][0] <<" "<< processes[i][0][1] << " " << processes[i][0][2] << '\t';
-    std::cout << processes[i][1][0] <<" "<< processes[i][1][1] << " " << processes[i][1][2] << '\t';
-    std::cout << processes[i][2][0] <<" "<< processes[i][2][1] << " " << processes[i][2][2] << std::endl;
+    std::cout << '\t' << processes[i][1][0] <<" "<< processes[i][1][1] << " " << processes[i][1][2] << '\t';
+    std::cout << '\t'<<processes[i][2][0] <<" "<< processes[i][2][1] << " " << processes[i][2][2] << std::endl;
   }
-
-  //Loop continuisly until the safe sequence is found
+    //Loop continuisly until the safe sequence is found
   for(int j = 0; index <= 4; ++j){
     int i = (j%6);
-    std::cout << i << ' ' << index << std::endl;
     //if the Need is less than the available
     if(processes[i][2][0] <= available[0] & processes[i][2][1] <= available[1] & processes[i][2][2] <= available[2] & flag[i] == 0){
       // available + allocation
@@ -84,17 +86,13 @@ int main(){
       ++index;
       unsafe_check = 0;
       flag[i] = 1;
-      std::cout << "found a process" << unsafe_check << i << std::endl;
     }
     //if not less than, increment so the loop can be tracked
     else{
-      std::cout << "incrementing unsafe check" << unsafe_check << i << std::endl;
-
       ++unsafe_check;
     }
     //if the loop did a full round trip with no change it is unsafe
     if(unsafe_check == 5){
-      std::cout << "Unsafe System"<< unsafe_check << " " << index << std::endl;
       break;
     }
   }
@@ -104,7 +102,7 @@ int main(){
   else{
     std::cout << "System is in a safe state. The Safe Sequence is: \n";
     for(int i = 0; i < 5; ++i){
-      std::cout << safe_sequence[i] << ' ';
+      std::cout << 'P' << safe_sequence[i] << ' ';
     }
     std::cout << std::endl;
   }
